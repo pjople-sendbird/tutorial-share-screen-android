@@ -42,14 +42,14 @@ public class MainActivity extends AppCompatActivity {
     /**
      * User your confguration here
      */
-    String APP_ID = "846F0DF3-8E35-4F1F-A110-1A7484D935BF";
-    String USER_ID = "test10";
+    String APP_ID = "YOUR APPLICATION ID HERE";
+    String USER_ID = "ANY USER ID HERE";
     String ACCESS_TOKEN = null;
 
     /**
      * User you want to call to
      */
-    String CALLEE_ID = "120192";
+    String CALLEE_ID = "ANY USER ID YOU WANT TO CALL TO";
 
     /**
      * Other parameters here
