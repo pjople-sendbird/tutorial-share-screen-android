@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "983013571313",
+    "project_id": "sendbirdcalls-da643",
+    "storage_bucket": "sendbirdcalls-da643.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:983013571313:android:7685806e41f1001eea4750",
+        "android_client_info": {
+          "package_name": "com.example.sendbirdscreenshare"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "983013571313-q3qfbhlnl5oid8hqg6lmn1a7h31549d2.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDjD8wr6XcCT32lVoCra_X-xXJ52eNwv68"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "983013571313-q3qfbhlnl5oid8hqg6lmn1a7h31549d2.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

@@ -4,8 +4,6 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.Manifest;
 import android.annotation.TargetApi;
-import android.app.Notification;
-import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -17,6 +15,10 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.Toast;
 
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.iid.FirebaseInstanceId;
+import com.google.firebase.iid.InstanceIdResult;
+import com.sendbird.calls.AcceptParams;
 import com.sendbird.calls.AuthenticateParams;
 import com.sendbird.calls.CallOptions;
 import com.sendbird.calls.DialParams;
@@ -40,20 +42,20 @@ public class MainActivity extends AppCompatActivity {
     /**
      * User your confguration here
      */
-    String APP_ID = "YOUR APPLICATION ID HERE";
-    String USER_ID = "YOUR USER ID HERE";
+    String APP_ID = "846F0DF3-8E35-4F1F-A110-1A7484D935BF";
+    String USER_ID = "test10";
     String ACCESS_TOKEN = null;
 
     /**
      * User you want to call to
      */
-    String CALLEE_ID = "MODERATOR ID FROM DASHBOARD";
+    String CALLEE_ID = "120192";
 
     /**
      * Other parameters here
      */
     Context mContext = this;
-    String UNIQUE_HANDLER_ID = "1234567";
+    String UNIQUE_HANDLER_ID = "1234567890123";
 
     /**
      * Current active call
@@ -63,7 +65,7 @@ public class MainActivity extends AppCompatActivity {
     /**
      * Log tag
      */
-    private static final String TAG = "Sendbird Screen share";
+    public static final String TAG = "Sendbird Screen share";
 
     /**
      * Elements on screen
@@ -171,6 +173,7 @@ public class MainActivity extends AppCompatActivity {
                             "Error authenticating user.",
                             Toast.LENGTH_LONG).show();
                 } else {
+                    Log.i(TAG, "User connected");
                     waitForCalls();
                     butConnect.setVisibility(View.GONE);
                     checkPermissions();
@@ -183,10 +186,71 @@ public class MainActivity extends AppCompatActivity {
      * Wait for remote calls
      */
     private void waitForCalls() {
+        SendBirdCall.removeAllListeners();
         SendBirdCall.addListener(UNIQUE_HANDLER_ID, new SendBirdCallListener() {
             @Override
             public void onRinging(DirectCall call) {
-                // Not covered in this tutorial...
+                call.setListener(new DirectCallListener() {
+                    @Override
+                    public void onEstablished(DirectCall call) {
+                        Log.i(TAG, "Call established");
+                        mCurentCall = call;
+                        // Start to show video
+                        setVideoOnceCallIsConnected(call);
+                        // Hide Make Call button
+                        butConnect.setVisibility(View.GONE);
+                    }
+                    @Override
+                    public void onConnected(DirectCall call) {
+                        Log.i(TAG, "Call connected to the other peer");
+                        mCurentCall = call;
+                    }
+                    @Override
+                    public void onEnded(DirectCall call) {
+                        Log.i(TAG, "Call ended");
+                        mCurentCall = null;
+                        // Hide view view
+                        mVideoViewSmall.setVisibility(View.GONE);
+                        mVideoViewFullScreen.setVisibility(View.GONE);
+                        // Show Make Call button
+                        butConnect.setVisibility(View.VISIBLE);
+                    }
+                    @Override
+                    public void onRemoteAudioSettingsChanged(DirectCall call) {
+                        Log.i(TAG, "Remote audio settings changed");
+                    }
+                });
+                CallOptions callOptions = new CallOptions()
+                        .setLocalVideoView(mVideoViewSmall)
+                        .setRemoteVideoView(mVideoViewFullScreen)
+                        .setVideoEnabled(true)
+                        .setAudioEnabled(true);
+                call.accept(new AcceptParams().setCallOptions(callOptions));
+            }
+        });
+        /** You can define your own sounds for your calls
+         *
+        SendBirdCall.Options.addDirectCallSound(SendBirdCall.SoundType.DIALING, R.raw.dialing);
+        SendBirdCall.Options.addDirectCallSound(SendBirdCall.SoundType.RINGING, R.raw.ringing);
+        SendBirdCall.Options.addDirectCallSound(SendBirdCall.SoundType.RECONNECTING, R.raw.reconnecting);
+        SendBirdCall.Options.addDirectCallSound(SendBirdCall.SoundType.RECONNECTED, R.raw.reconnected);
+         */
+        firebaseToken();
+    }
+
+    private void firebaseToken() {
+        FirebaseInstanceId.getInstance().getInstanceId().addOnSuccessListener(
+                MainActivity.this, new OnSuccessListener<InstanceIdResult>() {
+            @Override
+            public void onSuccess(InstanceIdResult instanceIdResult) {
+                String token = instanceIdResult.getToken();
+                Log.i("FCM Token", token);
+                SendBirdCall.registerPushToken(token, false, e -> {
+                    if (e != null) {
+                        Log.i(MainActivity.TAG,
+                                "[PushUtils] registerPushToken() => e: " + e.getMessage());
+                    }
+                });
             }
         });
     }
