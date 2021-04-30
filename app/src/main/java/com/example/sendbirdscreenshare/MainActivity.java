@@ -42,14 +42,14 @@ public class MainActivity extends AppCompatActivity {
     /**
      * User your confguration here
      */
-    String APP_ID = "YOUR APPLICATION ID HERE";
-    String USER_ID = "ANY USER ID HERE";
+    String APP_ID = "D1CB1742-A4A3-44B9-9E7F-126D14BAB34B";
+    String USER_ID = "test10";
     String ACCESS_TOKEN = null;
 
     /**
      * User you want to call to
      */
-    String CALLEE_ID = "ANY USER ID YOU WANT TO CALL TO";
+    String CALLEE_ID = "789298";
 
     /**
      * Other parameters here
@@ -72,7 +72,9 @@ public class MainActivity extends AppCompatActivity {
      */
     Button butConnect;
     Button butMakeCall;
+    Button butEndCall;
     Button butShareScreen;
+    Button butStopShareScreen;
     SendBirdVideoView mVideoViewFullScreen;
     SendBirdVideoView mVideoViewSmall;
 
@@ -122,15 +124,31 @@ public class MainActivity extends AppCompatActivity {
                 makeCall();
             }
         });
+        // End call button
+        butEndCall = (Button) findViewById(R.id.butEndCall);
+        butEndCall.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                endCall();
+            }
+        });
         // Share screen button
         butShareScreen = (Button) findViewById(R.id.butShareScreen);
         butShareScreen.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        // Run this method when this button is clicked
-                        startScreenShare();
-                    }
-                });
+            @Override
+            public void onClick(View v) {
+                // Run this method when this button is clicked
+                startScreenShare();
+            }
+        });
+        // Stop screen share button
+        butStopShareScreen = (Button) findViewById(R.id.butStopShareScreen);
+        butStopShareScreen.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                stopScreenShare();
+            }
+        });
         // Video (remove)
         mVideoViewFullScreen = findViewById(R.id.video_view_fullscreen);
         mVideoViewFullScreen.setScalingType(RendererCommon.ScalingType.SCALE_ASPECT_FIT);
@@ -162,7 +180,6 @@ public class MainActivity extends AppCompatActivity {
         AuthenticateParams params =
                 new AuthenticateParams(USER_ID)
                 .setAccessToken(ACCESS_TOKEN);
-
         // Authenticate user
         SendBirdCall.authenticate(params, new AuthenticateHandler() {
             @Override
@@ -174,8 +191,11 @@ public class MainActivity extends AppCompatActivity {
                             Toast.LENGTH_LONG).show();
                 } else {
                     Log.i(TAG, "User connected");
-                    waitForCalls();
+                    // Hide the connect button
                     butConnect.setVisibility(View.GONE);
+                    // Show the make call button
+                    butMakeCall.setVisibility(View.VISIBLE);
+                    waitForCalls();
                     checkPermissions();
                 }
             }
@@ -198,7 +218,11 @@ public class MainActivity extends AppCompatActivity {
                         // Start to show video
                         setVideoOnceCallIsConnected(call);
                         // Hide Make Call button
-                        butConnect.setVisibility(View.GONE);
+                        butMakeCall.setVisibility(View.GONE);
+                        // Show the End Call button
+                        butEndCall.setVisibility(View.VISIBLE);
+                        // Show Screen share button
+                        butShareScreen.setVisibility(View.VISIBLE);
                     }
                     @Override
                     public void onConnected(DirectCall call) {
@@ -212,8 +236,12 @@ public class MainActivity extends AppCompatActivity {
                         // Hide view view
                         mVideoViewSmall.setVisibility(View.GONE);
                         mVideoViewFullScreen.setVisibility(View.GONE);
-                        // Show Make Call button
-                        butConnect.setVisibility(View.VISIBLE);
+                        // Show Make call button
+                        butMakeCall.setVisibility(View.VISIBLE);
+                        // Hide End call button
+                        butEndCall.setVisibility(View.GONE);
+                        // Hide Screen share button
+                        butShareScreen.setVisibility(View.GONE);
                     }
                     @Override
                     public void onRemoteAudioSettingsChanged(DirectCall call) {
@@ -257,7 +285,7 @@ public class MainActivity extends AppCompatActivity {
 
     /**
      * You need to check if permissions are given
-     * for your accessing your camera
+     * for accessing your camera
      */
     private void checkPermissions() {
         ArrayList<String> deniedPermissions = new ArrayList<>();
@@ -285,7 +313,6 @@ public class MainActivity extends AppCompatActivity {
             .setRemoteVideoView(mVideoViewFullScreen)
             .setVideoEnabled(true)
             .setAudioEnabled(true);
-
         // Set parameters
         DialParams params = new DialParams(CALLEE_ID);
         params.setVideoCall(true);
@@ -308,8 +335,12 @@ public class MainActivity extends AppCompatActivity {
                 mCurentCall = call;
                 // Start to show video
                 setVideoOnceCallIsConnected(call);
-                // Hide Make Call button
-                butConnect.setVisibility(View.GONE);
+                // Hide Make call button
+                butMakeCall.setVisibility(View.GONE);
+                // Show End call button
+                butEndCall.setVisibility(View.VISIBLE);
+                // Show Screen share button
+                butShareScreen.setVisibility(View.VISIBLE);
             }
             @Override
             public void onConnected(DirectCall call) {
@@ -321,8 +352,12 @@ public class MainActivity extends AppCompatActivity {
                 // Hide view view
                 mVideoViewSmall.setVisibility(View.GONE);
                 mVideoViewFullScreen.setVisibility(View.GONE);
-                // Show Make Call button
-                butConnect.setVisibility(View.VISIBLE);
+                // Show Make call button
+                butMakeCall.setVisibility(View.VISIBLE);
+                // Hide End call button
+                butEndCall.setVisibility(View.GONE);
+                // Hide Screen share button
+                butShareScreen.setVisibility(View.GONE);
             }
         });
     }
@@ -347,8 +382,12 @@ public class MainActivity extends AppCompatActivity {
         mVideoViewFullScreen.setVisibility(View.GONE);
         // End the call
         mCurentCall.end();
-        // Show Make Call button
-        butConnect.setVisibility(View.VISIBLE);
+        // Show Make call button
+        butMakeCall.setVisibility(View.VISIBLE);
+        // Hide End call button
+        butEndCall.setVisibility(View.GONE);
+        // Hide Screen share button
+        butShareScreen.setVisibility(View.GONE);
     }
 
 
@@ -363,6 +402,21 @@ public class MainActivity extends AppCompatActivity {
         if (mediaProjectionManager != null) {
             startActivityForResult(mediaProjectionManager.createScreenCaptureIntent(), SCREEN_CAPTURE_PERMISSION_REQUEST_CODE);
         }
+    }
+
+    private void stopScreenShare() {
+        if (mCurentCall == null) {
+            return;
+        }
+        mCurentCall.stopScreenShare(new CompletionHandler() {
+            @Override
+            public void onResult(@Nullable SendBirdException e) {
+                // Hide stop screen share button
+                butStopShareScreen.setVisibility(View.GONE);
+                // Show Share screen button
+                butShareScreen.setVisibility(View.VISIBLE);
+            }
+        });
     }
 
     @Override
@@ -396,6 +450,10 @@ public class MainActivity extends AppCompatActivity {
                             "Screen sharing in progress",
                             Toast.LENGTH_LONG
                     ).show();
+                    // Show stop screen share button
+                    butStopShareScreen.setVisibility(View.VISIBLE);
+                    // Hide the share screen button
+                    butShareScreen.setVisibility(View.GONE);
                 }
             }
         });

@@ -22,17 +22,35 @@
         <!-- Button for making a call -->
         <Button
             android:id="@+id/butMakeCall"
+            android:visibility="gone"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:text="Make Call"></Button>
+        <!-- Button for ending the call -->
+        <Button
+            android:id="@+id/butEndCall"
+            android:visibility="gone"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:text="End Call"></Button>
         <!-- Button for sharing our screen -->
         <Button
             android:id="@+id/butShareScreen"
+            android:visibility="gone"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:text="Share screen"></Button>
+        <!-- Button for stop sharing our screen -->
+        <Button
+            android:id="@+id/butStopShareScreen"
+            android:visibility="gone"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:text="Stop screen share"></Button>
         <!--
             SENDBIRD VIDEO VIEW
         -->
