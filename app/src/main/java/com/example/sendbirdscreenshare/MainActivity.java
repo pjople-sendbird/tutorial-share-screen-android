@@ -42,8 +42,8 @@ public class MainActivity extends AppCompatActivity {
     /**
      * User your confguration here
      */
-    String APP_ID = "D1CB1742-A4A3-44B9-9E7F-126D14BAB34B";
-    String USER_ID = "test10";
+    String APP_ID = "YOUR SENDBIRD APPLICATION ID HERE";
+    String USER_ID = "ANY OF YOUR SENDBIRD USER ID HERE";
     String ACCESS_TOKEN = null;
 
     /**
@@ -55,7 +55,7 @@ public class MainActivity extends AppCompatActivity {
      * Other parameters here
      */
     Context mContext = this;
-    String UNIQUE_HANDLER_ID = "1234567890123";
+    String UNIQUE_HANDLER_ID = "USER ID TO CALL TO";
 
     /**
      * Current active call
